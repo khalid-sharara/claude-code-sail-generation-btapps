@@ -88,7 +88,19 @@ a!buttonWidget(
 
 ### Wizard Layout Structure
 
-Multi-step forms use `a!wizardLayout()` with step navigation:
+Multi-step forms use `a!wizardLayout()` where each step's content is nested inside `a!wizardStep(contents: {...})`.
+
+**IMPORTANT:** `a!wizardLayout` does NOT have a `contents` parameter. All step content must be placed inside the `contents` parameter of each `a!wizardStep()` within the `steps` parameter. The wizard automatically manages step visibility — no `showWhen` or `currentStep` checks are needed on step content.
+
+**`a!wizardStep` function signature:**
+`a!wizardStep(label, instructions, contents, showWhen, disableNextButton, validations, validationGroup)`
+- `label` (Text): Heading for the wizard step; also displays as step name in milestone indicator
+- `instructions` (Text): Optional text below the heading
+- `contents` (Any Type): Components and layouts to display in the wizard step
+- `showWhen` (Boolean): Whether the step is visible. Default: true
+- `disableNextButton` (Boolean): Prevents selecting Next. Default: false
+- `validations` (List of Variant): Validation errors displayed above buttons when not null
+- `validationGroup` (Text): Keyword to group validations with specific buttons
 
 ```sail
 a!localVariables(
@@ -96,29 +108,29 @@ a!localVariables(
 
   a!wizardLayout(
     steps: {
-      a!wizardStep(label: "Basic Information"),
-      a!wizardStep(label: "Contact Details"),
-      a!wizardStep(label: "Review & Submit")
-    },
-    currentStep: local!currentStep,
-    contents: {
-      /* Step 1: Basic Information */
-      showWhen(local!currentStep = 1,
-        a!cardLayout(
-          contents: { /* Step 1 fields */ }
-        )
+      a!wizardStep(
+        label: "Basic Information",
+        contents: {
+          a!cardLayout(
+            contents: { /* Step 1 fields */ }
+          )
+        }
       ),
-      /* Step 2: Contact Details */
-      showWhen(local!currentStep = 2,
-        a!cardLayout(
-          contents: { /* Step 2 fields */ }
-        )
+      a!wizardStep(
+        label: "Contact Details",
+        contents: {
+          a!cardLayout(
+            contents: { /* Step 2 fields */ }
+          )
+        }
       ),
-      /* Step 3: Review & Submit */
-      showWhen(local!currentStep = 3,
-        a!cardLayout(
-          contents: { /* Review section */ }
-        )
+      a!wizardStep(
+        label: "Review & Submit",
+        contents: {
+          a!cardLayout(
+            contents: { /* Review section */ }
+          )
+        }
       )
     },
     buttons: a!buttonLayout(

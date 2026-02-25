@@ -1,27 +1,30 @@
-# Claude Code SAIL Generation
+# SAIL UI Generation (Kiro)
 
 This tool generates Appian SAIL UI expressions from natural language requests.
 
 ## Getting Started
 1. [Clone this repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-2. *Windows users:* [Install Git for Windows](https://git-scm.com/downloads/win)
-3. [Install and set up Claude Code](https://docs.claude.com/en/docs/claude-code/setup)
-4. For best performance, connect to the Appian VPN while using this project ([See why](#validation-approaches))
-5. Open a terminal window and navigate to the root folder for this repo
-6. Launch Claude Code by typing: `claude`
-7. Grant any permissions that Claude Code asks for
+2. Open the repo folder in [Kiro](https://kiro.dev)
+3. For best performance, connect to the Appian VPN while using this project ([See why](#validation-approaches))
+4. Start chatting with Kiro to generate SAIL interfaces
 
-## (Optional + Recommended) Use with Visual Studio Code
-If you want to use an IDE instead of the command line:
-1. [Install Visual Studio Code](https://code.visualstudio.com/docs/setup/setup-overview)
-2. Launch VS Code
-3. [Install Claude Code extension for VS Code](https://docs.claude.com/en/docs/claude-code/vs-code#installation)
-4. [Install GitHub extension for VS Code](https://code.visualstudio.com/docs/sourcecontrol/github)
-5. Open the root folder for this repo in VS Code Explorer
-6. Click the Claude icon on the top bar to open a Claude Code tab
+## Project Structure
 
-## Additional Tips
-1. To stay up-to-date with the latest project enhancements, pull from this repo
+### Steering Files (`.kiro/steering/`)
+Kiro uses steering files to guide its behavior. This project includes:
+
+- **`sail-generation.md`** (auto-included) — Core SAIL generation rules, syntax requirements, validation checklists, and component guidelines. Always active.
+- **`sail-dynamic-converter.md`** (manual) — Guide for converting static mockups to dynamic, data-driven interfaces with live record queries.
+- **`sail-code-reviewer.md`** (manual) — Structure and syntax validation rules for SAIL code review.
+- **`sail-schema-validator.md`** (manual) — Schema-based parameter and value validation against the API schema.
+- **`sail-icon-validator.md`** (manual) — Icon name validation against the allowed aliases list.
+- **`sail-interface-splitter.md`** (manual) — Guide for refactoring large interfaces into reusable components.
+- **`sail-validation-implementer.md`** (manual) — Guide for implementing validation rules from screen definitions.
+
+Manual steering files are pulled in automatically when relevant, or you can reference them with `#` in chat.
+
+### MCP Server
+The Appian MCP server is configured in `.mcp.json` for SAIL expression validation. Requires VPN connection.
 
 ## Generating a SAIL Mockup
 
@@ -35,23 +38,17 @@ You can be as vague or as specific as you'd like:
 > "Make a case management dashboard"
 
 **Detailed:**
-> "A large insurance provider seeks a case management UI for handling customer claims. The target personas are claims adjusters and supervisors who need to review case files, track progress, and approve settlements. The UI should present a case summary panel, associated documents, and communication history in a structured, easy-to-navigate layout. Search and filtering tools are required for handling large volumes of claims, with inline editing for status updates and role-based access to sensitive data."
+> "A large insurance provider seeks a case management UI for handling customer claims. The target personas are claims adjusters and supervisors who need to review case files, track progress, and approve settlements."
 
 **Specific Layout Instructions:**
-> "Create an alerts inbox page. Use a pane layout: a MEDIUM-width left pane for the list of alerts and an AUTO-width pane for viewing the selected alert. Use a card layout with a decorative bar to represent each alert in the list..."
+> "Create an alerts inbox page. Use a pane layout: a MEDIUM-width left pane for the list of alerts and an AUTO-width pane for viewing the selected alert."
 
 ### Testing and Iteration
 
 1. Copy the generated expression from `/output` folder
 2. Paste into Appian Interface Designer
-3. If errors occur, paste the error message into Claude Code for automatic fixes
-4. Request adjustments through chat:
-   > "Increase the spacing between the KPI cards"
-
-   > "Change the grid to show 10 rows per page"
-
-   > "Add a filter dropdown for status"
-
+3. If errors occur, paste the error message back into Kiro for automatic fixes
+4. Request adjustments through chat
 
 ## Converting Mockup to Functional Interface
 
@@ -65,69 +62,23 @@ Once satisfied with your static mockup, convert it to use live Appian record dat
 
 > "Connect this to our Case record type"
 
-Or generate and convert in one request:
-> "Create a case dashboard with a grid showing title, description, status, and priority. After mocking it up, hook it up to Case record data."
-
-### How Conversion Works
-
-The `sail-dynamic-converter` agent:
-1. **Reads** your static SAIL mockup
-2. **Consults** `/context/data-model-context.md` for record type UUIDs and field references
-3. **Applies** conversion patterns:
-   - Replaces `local!` arrays with `a!queryRecordType()` or `a!recordData()`
-   - Converts form fields to use `ri!` rule input pattern
-   - Adds null-safe field access patterns
-   - Implements relationship navigation syntax
-4. **Validates** the converted expression
-5. **Ensures completeness** - ALL steps, sections, and fields are converted (no partial conversions)
-
 ### Pre-Requisite: Data Model Context
 
-**Required:** Edit `/context/data-model-context.md` with your data model details:
+Edit `/context/data-model-context.md` with your data model details:
 - Record type names and UUIDs
 - Field names and UUIDs
 - Relationships between record types
-- Field data types (Text, Number, Date, DateTime, etc.)
+- Field data types
 
 Try using [@tokyojordan's tool](https://github.com/tokyojordan/data-model-context) to generate the data model context from your app.
 
 ## Validation Approaches
 
-Claude Code validates generated SAIL expressions using different approaches:
-
 ### With VPN Connection (Recommended)
-**Approach:** Calls SAIL validation MCP server on Appian instance
-
-**Benefits:**
-- Fast, accurate syntax validation
-- Catches all SAIL-specific errors
-- Same validation as Appian uses
-
-**Setup:**
-1. Connect to Appian VPN
-2. Add MCP server permissions to `.claude/settings.local.json` (Optional, suppresses permission prompts each time tool is called):
-
-```json
-{
-  "permissions": {
-    "allow": [
-      "Bash",
-      "Bash(curl -X POST http://appn-mcp.custom-ai.appian-internal.com:8000/upload -F \"file=@/Users/charles.tsui/Documents/SAIL-Generation/output/*\")"
-    ]
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["appian-mcp-server"]
-}
-```
-
-3. Issue the `/mcp status` command in Claude Code to make sure that the Appian server is connnected (if not, try quitting VSCode/Claude code and restarting after conecting to VPN).
+Uses the Appian MCP server configured in `.mcp.json` for fast, accurate SAIL syntax validation.
 
 ### Without VPN Connection
-**Approach:** Uses specialized validation sub-agents
-
-**Process:**
-1. `sail-schema-validator` - Validates function syntax and parameters
-2. `sail-icon-validator` - Checks icon names against valid aliases
-3. `sail-code-reviewer` - Validates structure and best practices
-
-**Note:** Sub-agent validation is thorough but not as reliable as MCP server validation.
+Kiro uses the validation steering files to check:
+1. Schema validation — function syntax and parameters
+2. Icon validation — valid icon names
+3. Code review — structure and best practices

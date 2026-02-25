@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Log Error Fix to Source Files",
+  "description": "After editing a .sail file, checks if the current conversation involved fixing an error code. If so, updates the relevant steering or guideline source file with the lesson learned so the mistake is never repeated.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "output/*.sail"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check if the current conversation involved the user sharing an error code that you just fixed in this file edit. If YES, do the following:\n\n1. Identify which source file the error relates to by category:\n   - Layout/nesting errors → `.kiro/steering/sail-generation.md` (BEFORE YOU BEGIN or LAYOUT sections)\n   - Syntax/expression errors → `.kiro/steering/sail-generation.md` (SYNTAX REQUIREMENTS or NULL SAFETY sections)\n   - Parameter/value errors → `.kiro/steering/sail-generation.md` (PARAMETER RESTRICTIONS section)\n   - Icon errors → `ui-guidelines/reference/rich-text-icon-aliases.md`\n   - Grid-specific errors → `ui-guidelines/components/grid-field-instructions.md`\n   - Chart errors → `logic-guidelines/chart-configuration.md`\n   - forEach/array errors → `logic-guidelines/foreach-patterns.md` or `logic-guidelines/array-manipulation-patterns.md`\n   - Null safety errors → `logic-guidelines/null-safety-quick-ref.md`\n   - Code structure errors → `.kiro/steering/sail-code-reviewer.md`\n   - Schema validation errors → `.kiro/steering/sail-schema-validator.md`\n   - Button errors → `ui-guidelines/components/button-instructions.md`\n   - Rich text errors → `ui-guidelines/components/rich-text-instructions.md`\n   - Stamp errors → `ui-guidelines/components/stamp-field-instructions.md`\n   - General logic errors → `logic-guidelines/LOGIC-PRIMARY-REFERENCE.md`\n\n2. Read the identified file, find the most relevant section, and append a concise rule in this format:\n   - ❌ `[wrong pattern]` → ✅ `[correct pattern]` /* Learned: [error code/description] */\n\n3. If the error reveals a missing rule that doesn't fit any existing section, add it to the nearest relevant section with a `/* LEARNED FROM ERROR */` comment.\n\nIf the conversation did NOT involve fixing an error code shared by the user, do nothing."
+  }
+}
