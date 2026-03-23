@@ -36,6 +36,7 @@ inclusion: auto
 9. ⚠️ Grid record-only parameters (`showSearchBox`, `userFilters`, `recordActions`) cause runtime errors with local data - use custom search/filter UX with TODO comments for mockups instead
 10. ❌ NEVER use runtime generators (rand(), now(), today()) for sample data - use hardcoded static values instead
 11. ⚠️ Grid column `value` accepts ONE component — to show multiple component types (e.g., rich text AND a tag), use a single richTextDisplayField with richTextIcon + richTextItem to simulate tags/stamps, since tagField/stampField CANNOT be nested inside richTextDisplayField
+12. ⚠️ ALL local variables MUST follow naming conventions with type suffixes: `local!{descriptiveName}_{typeSuffix}` — e.g., `local!customerName_txt`, `local!isApproved_bool`, `local!crmOrders_rt`, `local!selectedIds_list`. NEVER use generic names like `local!data` or `local!items` without a type suffix. See "LOCAL VARIABLE NAMING CONVENTIONS" section for full rules.
 
 If you violate any of these rules, STOP and reconsider your approach.
 
@@ -198,50 +199,6 @@ Browse `/ui-guidelines/patterns` for composing common UI elements:
 | Pattern matching | `/logic-guidelines/pattern-matching.md` |
 | Date/time handling | `/logic-guidelines/datetime-handling.md` |
 | Chart configuration | `/logic-guidelines/chart-configuration.md` |
-
-## LOCAL VARIABLE NAMING CONVENTIONS
-
-### General Rules
-- Use camelCase for the variable name
-- Plurality must match the data: singular for single values, plural for lists/arrays
-- Append a type suffix after an underscore to indicate purpose/type
-
-### Type Suffixes
-
-| Suffix | Type | Example |
-|--------|------|---------|
-| `_int` | Integer | `local!totalLineItems_int` |
-| `_dec` | Decimal | `local!averageCost_dec` |
-| `_txt` | Text | `local!customerName_txt` |
-| `_bool` | Boolean | `local!isApproved_bool` |
-| `_dt` | Date/DateTime | `local!submissionDate_dt` |
-| `_map` | Map | `local!filterCriteria_map` |
-| `_rt` | Record Type data | `local!crmOrders_rt` |
-
-### Record Type Variables (`_rt`)
-- Include context about the record type source: `local!crmOrders_rt`
-- When multiple variables reference the same record type, add a differentiating segment after the record name:
-  - ✅ `local!crmOrders_archived_rt`, `local!crmOrders_unarchived_rt`
-  - ❌ `local!crmOrders_rt`, `local!crmOrders2_rt`
-
-### Examples
-```
-/* ✅ CORRECT naming */
-local!totalLineItems_int: 0,
-local!averageCost_dec: 0.0,
-local!customerName_txt: "",
-local!isApproved_bool: false(),
-local!crmOrders_rt,
-local!crmOrders_archived_rt,
-local!crmOrders_unarchived_rt,
-local!selectedItems_map: {},
-
-/* ❌ WRONG naming */
-local!data,              /* no context or type suffix */
-local!item,              /* too vague, no suffix */
-local!crmOrders2_rt,     /* use descriptive differentiator, not numbers */
-local!order_rt,          /* should be plural if it holds multiple records */
-```
 
 ## EXPRESSION STRUCTURE RULES
 - All expressions must begin with a!localVariables() as the parent element
