@@ -5,7 +5,7 @@ inclusion: auto
 # PROJECT INSTRUCTIONS - SAIL UI GENERATION
 
 ## PURPOSE AND GOALS
-- Given a request, generate an Appian SAIL UI mockup
+- Given a request generate an Appian SAIL UI mockup
 - Write generated output to a .sail file in the /output folder
 - Use only valid SAIL components and the allowed parameter values for each
 - Use modern, but business-appropriate styling
