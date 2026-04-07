@@ -1,5 +1,6 @@
 ---
 inclusion: manual
+description: Validate SAIL code structure, layout nesting rules, fv! context, null safety, and syntax correctness.
 ---
 
 # SAIL Code Structure Reviewer

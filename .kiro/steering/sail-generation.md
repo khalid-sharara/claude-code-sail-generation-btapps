@@ -118,6 +118,14 @@ Browse `/ui-guidelines/patterns` for composing common UI elements:
 - `messages.md` for message banners
 - `tabs.md` for tab bars
 
+### AI Chat Components
+- Use `a!chatField()` + `a!callLanguageModel()` for AI-powered chat interfaces
+- **ALWAYS read** `/ui-guidelines/components/chat-field-instructions.md` before building any chat interface
+- Non-streaming pattern is recommended for reliability; streaming is optional for better UX
+- `save!value` is ONLY valid inside `a!save()` — never use it in bare `if()` blocks
+- Seed chat messages with an initial ASSISTANT greeting so the chat is never blank
+- Store messages as `a!map(role: "USER"/"ASSISTANT", messageContent: "...")` for compatibility with both `a!chatMessage()` and `a!callLanguageModel(messages:)`
+
 ### Button Quick Rules
 - Style is ONLY: `"OUTLINE"` | `"GHOST"` | `"LINK"` | `"SOLID"`
 - Colors: `"ACCENT"` | `"SECONDARY"` | `"NEGATIVE"` | hex codes
@@ -176,8 +184,9 @@ Browse `/ui-guidelines/patterns` for composing common UI elements:
 ### Step 2: Read Component-Specific Instructions (When Available)
 
 **Layouts:** header-content, columns, sidebyside, form, pane, wizard, card layout instructions
-**Components:** button, grid-field, grid-layout, rich-text, stamp-field, card-choice-field, chart, image-field, tabular-data-display-pattern instructions
+**Components:** button, grid-field, grid-layout, rich-text, stamp-field, card-choice-field, chart, image-field, chat-field, tabular-data-display-pattern instructions
 **Icons:** ⚠️ **MUST READ before using ANY icons:** `ui-guidelines/reference/rich-text-icon-aliases.md`
+**AI Chat:** ⚠️ **MUST READ before building chat interfaces:** `ui-guidelines/components/chat-field-instructions.md`
 
 ### Step 3: Follow the Pattern
 1. Load schema files → Understand allowed parameters and values
@@ -247,6 +256,50 @@ Browse `/ui-guidelines/patterns` for composing common UI elements:
 - Choice values cannot be null or empty strings
 - Choice field value initialization: leave uninitialized for unchecked state
 - **SAIL has NO regex support** - use pattern from `/logic-guidelines/functions-reference.md#email-validation-pattern`
+
+## ⚠️ RECORD TYPE REFERENCE FORMAT (CRITICAL)
+
+When referencing record types and their fields in functional SAIL code, the EXACT format is:
+
+### Record Type Reference (e.g., in `recordType:` parameter or `cast()`):
+```
+'recordType!{RECORD-UUID}RecordName'
+```
+
+### Field Reference (e.g., in `fields:`, `filters:`, `sort:`, `fv!item[]`):
+```
+'recordType!{RECORD-UUID}RecordName.fields.{FIELD-UUID}fieldName'
+```
+
+### Rules:
+- ✅ ALWAYS wrap the entire reference in single quotes
+- ✅ ALWAYS include the field-level UUID between `.fields.` and the field name
+- ✅ The record type UUID and field UUID are BOTH required
+- ❌ NEVER omit the single quotes — `recordType!{uuid}Name` without quotes will fail
+- ❌ NEVER omit the field UUID — `.fields.fieldName` without `{uuid}` will fail
+- ❌ NEVER use sed, regex, or automated find-replace on record type references — always hand-write them
+- ❌ NEVER strip or modify record type references with scripts — they are fragile and must be exact
+
+### Examples:
+```sail
+/* Record type in query */
+recordType: 'recordType!{8402b8d5-6665-466c-81d6-c7504008b304}KSS_ChatThread',
+
+/* Field in fields list */
+'recordType!{8402b8d5-6665-466c-81d6-c7504008b304}KSS_ChatThread.fields.{8e62c6cb-3596-4012-8d63-1715cceb1bac}chatThreadId',
+
+/* Field in fv!item indexing */
+fv!item['recordType!{80aa652a-af3a-4da1-b300-421722d538c6}KSS_ChatMessage.fields.{16e117e7-d919-4601-97ab-63052d9b98a0}role']
+
+/* Record type constructor */
+'recordType!{80aa652a-af3a-4da1-b300-421722d538c6}KSS_ChatMessage'(
+  'recordType!{80aa652a-af3a-4da1-b300-421722d538c6}KSS_ChatMessage.fields.{0a6fcc9e-07f7-4aea-9b92-fab80f2a706c}threadId': value
+)
+```
+
+### Where to find UUIDs:
+- Record type and field UUIDs are provided by the user or found in `/context/data-model-context.md`
+- NEVER invent or guess UUIDs — always ask the user if not available
 
 ## ⚠️ NULL SAFETY RULES (CRITICAL)
 

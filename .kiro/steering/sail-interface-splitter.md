@@ -1,5 +1,6 @@
 ---
 inclusion: manual
+description: Analyze a monolithic SAIL interface and refactor it into focused, reusable components.
 ---
 
 # SAIL Interface Splitter

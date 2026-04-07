@@ -1,5 +1,6 @@
 ---
 inclusion: manual
+description: Analyze validation requirements and implement feasible validations in existing SAIL code.
 ---
 
 # SAIL Validation Implementer

@@ -1,5 +1,6 @@
 ---
 inclusion: manual
+description: Validate all SAIL functions, parameters, and enumerated values against the official API schema.
 ---
 
 # SAIL Schema Validator

@@ -1,5 +1,6 @@
 ---
 inclusion: manual
+description: Verify that every icon name used in SAIL code matches a valid icon alias from the documentation.
 ---
 
 # SAIL Icon Validator

@@ -1,5 +1,6 @@
 ---
 inclusion: manual
+description: Transform static mockup SAIL code into dynamic, data-driven interfaces that query live Appian records.
 ---
 
 # SAIL Dynamic Converter
