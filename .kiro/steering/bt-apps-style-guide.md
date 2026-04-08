@@ -6,6 +6,8 @@ inclusion: auto
 
 All SAIL interfaces built for Business Technology (BT) applications must follow this style guide to ensure a consistent, modern, enterprise-grade look and feel.
 
+The UX has to be sleek and modern and something a mature enterprise company would use. 
+
 ## Color Palette
 
 ### Primary Colors

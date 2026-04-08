@@ -162,6 +162,15 @@
           ],
           "acceptsHexColors": true
         },
+        "tooltip": {
+          "type": "Text",
+          "description": "Text to display as a tooltip on the tag"
+        },
+        "showWhen": {
+          "type": "Boolean",
+          "default": true,
+          "description": "Determines whether the tag is displayed on the interface"
+        },
         "link": {
           "type": "Any Type"
         }
